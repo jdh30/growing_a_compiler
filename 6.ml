@@ -92,8 +92,8 @@ let () =
     match Sys.argv with
     | [|_; n|] -> int_of_string n
     | _ -> 42 in
-  printf "    .global main\n";
-  printf "main:\n";
+  printf "    .global _start\n";
+  printf "_start:\n";
   let env = emit_expr [] (Apply("fn", Int n)) in
   printf "    mov     r7, #1\n";
   printf "    svc     0\n";

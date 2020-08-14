@@ -38,8 +38,8 @@ let () =
     match Sys.argv with
     | [|_; n|] -> int_of_string n
     | _ -> 42 in
-  printf "    .global main\n";
-  printf "main:\n";
+  printf "    .global _start\n";
+  printf "_start:\n";
   emit_expr(Putchar(BinOp(Int n, Sub, Int 1)));
   printf "    mov     r7, #1\n";
   printf "    svc     0\n"

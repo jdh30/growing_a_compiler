@@ -82,8 +82,8 @@ let () =
     match Sys.argv with
     | [|_; n|] -> int_of_string n
     | _ -> 42 in
-  printf "    .global main\n";
-  printf "main:\n";
+  printf "    .global _start\n";
+  printf "_start:\n";
   let env = emit_expr [] (Putchar(Let("c", Let("a", Int n, BinOp(Var "a", Add, Var "a")), Let("b", BinOp(Var "c", Sub, Int n), Var "b")))) in
   eprintf "Stack = %s\n" (String.concat ", " env);
   printf "    mov     r7, #1\n";
