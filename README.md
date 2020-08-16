@@ -65,10 +65,14 @@ Lessons learned: I haven't used OCaml for many years and used to enjoy its suppo
 See the [dedicated README](4/README.md).
 
 
+## 5. Functions
+
+See the [dedicated README](5/README.md).
+
+
 ## To do
 
 * Pattern matching
-* Functions
 * Tuples and a simple type system
 * Memory allocation: arrays
 * Algebraic datatypes
