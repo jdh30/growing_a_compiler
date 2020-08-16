@@ -57,10 +57,12 @@ Version 3 includes support for some arithmetic (add, substract, multiply and div
 
 In the interests of simplicity this version of the compiler generates purely stack-based code. The many `push` and `pop` memory operations are extremely inefficient on the Arm architecture but premature optimisation is the root of all evil: I intend to build the source language up to the point where it can be benchmarked (i.e. conditionals and loops) before optimising the generated code. Once that has been accomplished the first optimisation will be register allocation and then probably inlining.
 
+Lessons learned: I haven't used OCaml for many years and used to enjoy its support for simple and efficient inline parsers using Camlp4 including Emacs support from the Tuareg mode. Sadly, both Camlp4 and Tuareg are now deprecated and their replacements do not yet offer these features: PPX doesn't support inline parsing and Merlin doesn't appear to support either ocamllex or Menhir.
 
-## Variables
 
-For details about version 4 see the [dedicated README](4/README.md).
+## 4. Variables
+
+See the [dedicated README](4/README.md).
 
 
 ## To do
