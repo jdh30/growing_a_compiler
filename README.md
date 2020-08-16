@@ -69,12 +69,14 @@ See the [dedicated README](4/README.md).
 
 * Pattern matching
 * Functions
-* Tuples
-* Arrays
-* IO
+* Tuples and a simple type system
+* Memory allocation: arrays
 * Algebraic datatypes
+* Floating point
 * Generic equality, comparison, hashing, pretty printing and serialization
+* Calling conventions and a FFI (IO and OpenGL)
+* Bootstrap
+* Development environment
 * Abstract representation of the instruction set
 * Register allocation
-* Generate machine code to make a JIT
-* Calling conventions and a FFI
+* JIT: emit machine code into executable memory
