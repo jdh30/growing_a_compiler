@@ -1,3 +1,14 @@
+(*
+Minimal compiler
+
+Our abstract syntax tree can only convey a single int that we
+read from the compiler's command line arguments. This compiler
+emits a movw and movt sequence to inject the required int into
+the generated assembly.
+
+Register R0 is used to hold the int.
+*)
+
 open Printf
 
 type expr =
@@ -9,10 +20,9 @@ let emit = function
     printf "    movt    r0, %d\n" ((n lsr 16) land 0xffff)
 
 let () =
-  let n =
-    match Sys.argv with
-    | [|_; n|] -> int_of_string n
-    | _ -> 42 in
+  eprintf "Give me an int:\n> %!";
+  let n = read_int() in
+  eprintf "Generating Arm assembly for %d\n" n;
   printf "    .global _start\n";
   printf "_start:\n";
   emit(Int n);
