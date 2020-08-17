@@ -1,8 +1,5 @@
 (*
-Supports named variables.
-
-Any intermediate value can be named and referred back to via
-the stack.
+Supports functions.
 *)
 
 open Printf
