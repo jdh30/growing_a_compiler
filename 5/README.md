@@ -1,24 +1,21 @@
-# Variables
+# Functions
 
-This version of the compiler introduces support for variables and weighs in at 127 lines of code. In order to accommodate this sophistication it uses Ocamllex and Menhir to parse a more advanced ML-like syntax and the Dune build system to manage code generation and compilation.
+This version of the compiler introduces support for functions and weighs in at 161 lines of code.
 
-Variables are implemented by keeping track of where they are on the stack and copying them to the top of the stack when needed.
+Function definitions are implemented by jumping over a block of code that implements the function body and pushing the address of the block of code onto the stack. Function application is implemented by popping the address of the function off the stack, jumping to it and then removing the argument from the stack to leave just the return value.
 
-The heavy lifting is automated by a dedicated `run.sh` script:
+This makes it possible to run some interesting code samples such as passing one function to another function as an argument:
 
     $ ./run.sh 
     Building compiler...
-          menhir parser.{ml,mli}
-    Built an LR(0) automaton with 27 states.
-    The construction mode is pager.
-    Built an LR(1) automaton with 27 states.
-    36 shift/reduce conflicts were silently solved.
-    Warning: one state has shift/reduce conflicts.
-    Warning: 6 shift/reduce conflicts were arbitrarily resolved.
     Running compiler...  
-    Give me an expression in ML syntax like "let x = 3 in x*(x+1)"
-    > let x = 3 in x*(x+1)
-    Generating Arm assembly for let x = 3 in mul (x, add (x, 1))
+    Give me an expression in ML syntax like "(fun f -> f(f 3)) (fun x -> x*x)"
+    > (fun f -> f(f 3)) (fun x -> x*x)
+    Generating Arm assembly for ((fun f -> (f)((f)(3))))((fun x -> mul (x, x)))
     Assembling generated program...
     Running executable and printing exit code...
-    12
+    81
+
+Note that these are not first-class functions because there is no support for environment capture, i.e. a function can only refer to its parameters and not to any variables from an outer scope.
+
+Lessons learned: the ability to co-evolve code blocks (called "basic blocks" in LLVM parlance) would be cleaner than the hack of jumping over the definition of each function. In the distant future the optimiser will want the ability to re-order and inline code blocks anyway as well as replace dynamic jumps to addresses in registers with static jumps to labels whenever possible.
