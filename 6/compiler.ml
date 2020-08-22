@@ -1,7 +1,7 @@
 (*
 Pattern matching
 Negative numbers: parsing and emitting correct MOVs.
-Recursive functions
+New representation of the stack that allows each stack slot to have multiple names.
 *)
 
 open Printf
@@ -21,12 +21,12 @@ let rec find ?(o=0) v = function
   | [] ->
     eprintf "Unknown variable '%s'\n" v;
     failwith "Unknown variable"
-  | v'::env ->
-    if v = v' then o else find ~o:(o+4) v env
+  | vs::env ->
+    if List.exists ((=) v) vs then o else find ~o:(o+4) v env
 
-let push env vrs =
-  printf "    push    {r%s}\n" (String.concat ", r" (List.map (fun (_, r) -> string_of_int r) vrs));
-  List.fold_right (fun (v, _) env -> v::env) vrs env
+let push env rs =
+  printf "    push    {r%s}\n" (String.concat ", r" (List.map (fun r -> string_of_int r) rs));
+  List.fold_right (fun _ env -> []::env) rs env
 
 let pop env rs =
   printf "    pop     {r%s}\n" (String.concat ", r" (List.map string_of_int rs));
@@ -41,10 +41,10 @@ let mk f =
 let mk_lbl = mk (sprintf ".L%d")
 let mk_arg = mk (sprintf "arg%d")
 
-let rename env v =
+let name_top env v =
   match env with
-  | _::env -> v::env
-  | [] -> failwith "Attempt to rename top of empty stack"
+  | vs::env -> (v::vs)::env
+  | [] -> failwith "Attempt to name top of empty stack"
 
 let emit_lbl lbl =
   printf "%s:\n" lbl
@@ -68,8 +68,11 @@ let rec emit_patt env arg patt fail_lbl =
     printf "    bne     %s\n" fail_lbl;
     env
   | PVar v ->
+    name_top env v
+(*
     printf "    ldr     r11, [sp]\n";
     push env [v, 11]
+*)
   | POr(p1, p2) ->
     let pass_lbl = mk_lbl() in
     let next_lbl = mk_lbl() in
@@ -82,21 +85,21 @@ let rec emit_patt env arg patt fail_lbl =
 and emit_expr env = function
   | Int n ->
     emit_int n 11;
-    push env ["", 11]
+    push env [11]
   | Var v ->
     emit_var env v 11;
-    push env [v, 11]
+    name_top (push env [11]) v
   | BinOp(f, op, g) ->
     let env = emit_expr env f in
     let env = emit_expr env g in
     let env = pop env [10; 11] in
     printf "    %s    r11, r11, r10\n" (string_of_op op);
-    push env ["", 11]
+    push env [11]
   | Apply(f, x) ->
     let env = emit_expr env f in
     let env = emit_expr env x in
     let env = pop env [10; 11] in
-    let env = push env ["", 10] in
+    let env = push env [10] in
     printf "    blx     r11\n";
     env
   | Match(arg, cases) ->
@@ -104,32 +107,32 @@ and emit_expr env = function
     let env = emit_expr env arg in
     (* Name top of stack *)
     let arg = mk_arg() in
-    emit_cases (rename env arg) arg cases (mk_lbl())
+    emit_cases (name_top env arg) arg cases (mk_lbl())
   | Fun(x, f) ->
     let fn_lbl = mk_lbl() in
     let after_lbl = mk_lbl() in
     printf "    b       %s\n" after_lbl;
     emit_lbl fn_lbl;
     printf "    push    {lr}\n";
-    let env2 = emit_expr [""; x] f in
+    let env2 = emit_expr [[]; [x]] f in
     let env2 = pop env2 [9; 10; 11] in
-    let _ = push env2 ["", 9] in
+    let _ = push env2 [9] in
     printf "    mov     pc, r10\n";
     emit_lbl after_lbl;
     printf "    ldr     r11, =%s\n" fn_lbl;
-    push env ["", 11]
+    push env [11]
   | Let(x, body, rest) ->
     let env = emit_expr env body in
-    let env = emit_expr (rename env x) rest in
+    let env = emit_expr (name_top env x) rest in
     let env = pop env [10; 11] in
-    push env ["", 10]
+    push env [10]
 and emit_cases env arg cases final_lbl =
   match cases with
   | [] ->
     emit_lbl final_lbl;
     (* Pop ret and arg off the stack and push ret back on. *)
     let env = pop env [10; 11] in
-    push env ["", 10]
+    push env [10]
   | (patt, expr)::cases ->
     let fail_lbl = mk_lbl() in
     let env = emit_patt env arg patt fail_lbl in
@@ -140,7 +143,7 @@ and emit_cases env arg cases final_lbl =
 
 let () =
   Printexc.record_backtrace true;
-  eprintf "Give me an expression in ML syntax like \"(fun f -> f(f 3)) (fun x -> x*x)\"\n> %!";
+  eprintf "Give me an expression in ML syntax like \"(fun n -> match n with 0 -> 0 | n -> n-1) 3\"\n> %!";
   let line = read_line() in
   let lexbuf = Lexing.from_string line in
   try

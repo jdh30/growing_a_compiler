@@ -4,19 +4,14 @@ This version of the compiler introduces support for conditional execution in the
 
 Here is an example:
 
-    $ ./run.sh 
+    $ ./run.sh
     Building compiler...
-          menhir parser.{ml,mli}
-    Built an LR(0) automaton with 27 states.
-    The construction mode is pager.
-    Built an LR(1) automaton with 27 states.
-    36 shift/reduce conflicts were silently solved.
-    Warning: one state has shift/reduce conflicts.
-    Warning: 6 shift/reduce conflicts were arbitrarily resolved.
-    Running compiler...  
-    Give me an expression in ML syntax like "let x = 3 in x*(x+1)"
-    > let x = 3 in x*(x+1)
-    Generating Arm assembly for let x = 3 in mul (x, add (x, 1))
+    Running compiler...
+    Give me an expression in ML syntax like "(fun n -> match n with 0 -> 0 | n -> n-1) 3"
+    > (fun n -> match n with 0 -> 0 | n -> n-1) 3
+    Generating Arm assembly for ((fun n -> (match n with 0 -> 0 | n -> sub (n, 1))))(3)
     Assembling generated program...
     Running executable and printing exit code...
-    12
+    2
+
+Note that this version also handles negative numbers and uses a different representatio of the stack that allows each slot to have multiple names.
