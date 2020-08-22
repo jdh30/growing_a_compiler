@@ -1,6 +1,6 @@
 # Pattern matching
 
-This version of the compiler introduces support for conditional execution in the form of pattern matching and weighs in at 258 lines of code.
+This version of the compiler introduces support for conditional execution in the form of pattern matching and weighs in at 260 lines of code.
 
 Here is an example:
 
