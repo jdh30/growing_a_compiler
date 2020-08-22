@@ -70,9 +70,13 @@ See the [dedicated README](4/README.md).
 See the [dedicated README](5/README.md).
 
 
+## 6. Pattern matching
+
+See the [dedicated README](6/README.md).
+
+
 ## To do
 
-* Pattern matching
 * Tuples and a simple type system
 * Memory allocation: arrays
 * Algebraic datatypes
