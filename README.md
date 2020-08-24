@@ -1,5 +1,5 @@
 # Growing a Compiler
- 
+
 This repository details my attempts to grow a compiler. I was initially inspired to pursue this idea by an excellent paper ["An Incremental Approach to Compiler Construction"](http://scheme2006.cs.uchicago.edu/11-ghuloum.pdf) by Abdulaziz Ghuloum and a [wonderful presentation](https://www.youtube.com/watch?v=WBWRkUuyuE0) about it by Jaseem Abid where they described how to grow a compiler that translates Scheme into x86 assembly. The final push I needed was the superb book [Compiling to Assembly from scratch](https://keleshev.com/compiling-to-assembly-from-scratch/) by Vladimir Keleshev that describes a compiler written in Typescript that generates 32-bit Arm assembly and has an elegant [partial OCaml port](https://github.com/keleshev/compiling-to-assembly-from-scratch/tree/main/contrib/ocaml).
 
 My objective with this project is slightly different. I wish to avoid run-time type information and checks at all costs and use a C-like data representation instead. I plan to achieve this using a statically-typed language of the ML family. My compilers are written in OCaml and generate 32-bit Arm assembly (aka A32) ideal for a Raspberry Pi 4 running the Raspberry Pi OS.
