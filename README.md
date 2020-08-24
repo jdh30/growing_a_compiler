@@ -75,6 +75,11 @@ See the [dedicated README](5/README.md).
 See the [dedicated README](6/README.md).
 
 
+## 7. Recursion
+
+See the [dedicated README](7/README.md).
+
+
 ## To do
 
 * Tuples and a simple type system
